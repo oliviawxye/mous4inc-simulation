@@ -8,11 +8,14 @@ Last updated: 2-11-19
 """
 
 # flight event codes to start each process
+FLIGHT_EVENT_RESET_FILES = 'A'
 FLIGHT_EVENT_CAMERA = 'C'
 FLIGHT_EVENT_MOTOR = 'D'
 FLIGHT_EVENT_TEMPERATURE = 'F'
 FLIGHT_EVENT_LEDS = 'C'
 FLIGHT_EVENT_MISSION_END = 'M'
+FLIGHT_EVENT_AMBIENT = 'F'
+FLIGHT_EVENT_PRESSURE = 'F'
 
 import time
 import serial
@@ -108,9 +111,29 @@ def init_experiment():
 f_mainlog_a = open("mainlog.txt", "a")
 f_mainlog_w = open("mainlog.txt", "w")
 
-#f_temperaturelog_a = open("temperaturelog.txt", "a")
+# Opens temperaturelog.txt to overwrite previous information and add text
+f_temperaturelog_a = open("temperaturelog.txt", "a")
 f_temperaturelog_w = open("temperaturelog.txt", "w")
 
+# Opens ambientlog.txt to overwrite previous information and add text
+f_ambientlog_a = open("ambientlog.txt", "a")
+f_ambientlog_w = open("ambientlog.txt", "w")
+
+# Opens pressurelog.txt to overwrite previous information and add text
+f_pressurelog_a = open("pressurelog.txt", "a")
+f_pressurelog_w = open("pressurelog.txt", "w")
+
+""" reset_files """
+def reset_files(telemetry):
+    print_str = str(datetime.datetime.now()) + "; " + telemetry + "; reset file\n"
+    global f_mainlog_w
+    global f_temperaturelog_w
+    global f_ambientlog_w
+    global f_pressurelog_w
+    f_mainlog_w.write(print_str)
+    f_temperaturelog_w.write(print_str)
+    f_ambientlog_w.write(print_str)
+    f_pressurelog_w.write(print_str)
 
 """ run_camera """
 # log systemtime, telemetry, and camera on action to mainlog.txt
@@ -118,9 +141,8 @@ f_temperaturelog_w = open("temperaturelog.txt", "w")
 def run_camera(telemetry):
     global f_mainlog_a
     f_mainlog_a.write(str(datetime.datetime.now()) + "; " + telemetry + "; camera on\n")
-    #print(str(datetime.datetime.now()) + "; " + telemetry + "; run_camera successful in main.py\n")
-    Popen(['python', 'camera.py'])
-
+    print(str(datetime.datetime.now()) + "; " + telemetry + "; run_camera successful in main.py\n")
+    Popen(['python3', 'camera.py'])
 
 """ run_motor """
 # log systemtime, telemetry, and motor on action to mainlog.txt
@@ -129,8 +151,7 @@ def run_motor(telemetry):
     global f_mainlog_a
     f_mainlog_a.write(str(datetime.datetime.now()) + "; " + telemetry + "; motor on\n")
     print(str(datetime.datetime.now()) + "; " + telemetry + "; run_motor successful in main.py\n")
-    Popen(['python', 'motor.py'])
-
+    Popen(['python3', 'motor.py'])
 
 """ run_temperature """
 # log systemtime, telemetry, and temperature on action to mainlog.txt
@@ -138,11 +159,11 @@ def run_motor(telemetry):
 # call temperature.py to run
 def run_temperature(telemetry):
     global f_mainlog_a
+    global f_temperaturelog_w
     f_mainlog_a.write(str(datetime.datetime.now()) + "; " + telemetry + "; temperature on\n")
     print(str(datetime.datetime.now()) + "; " + telemetry + "; run_temperature sucessful in main.py\n")
-    f_temperaturelog_w.write(str(datetime.datetime.now()) + "; " + telemetry + "\n")
-    Popen(['python', 'temperature.py'])
-
+    f_temperaturelog_a.write(str(datetime.datetime.now()) + "; " + telemetry + "\n")
+    Popen(['python3', 'temperature.py'])
 
 """ run_leds """
 # log systemtime, telemetry, and leds on action to mainlog.txt
@@ -151,22 +172,51 @@ def run_leds(telemetry):
     global f_mainlog_a
     f_mainlog_a.write(str(datetime.datetime.now()) + "; " + telemetry + "; leds on\n")
     print(str(datetime.datetime.now()) + "; " + telemetry + "; run_leds successful in main.py\n")
-    Popen(['python', 'leds.py'])
+    Popen(['python3', 'leds.py'])
 
+""" run_ambient """
+# log systemtime, telemetry, and ambient temp/humidity on action to mainlog.txt
+# log systemtime, and telemetry to ambientlog.txt
+# call ambient.py to run
+def run_ambient(telemetry):
+    global f_mainlog_a
+    global f_ambientlog_w
+    f_mainlog_a.write(str(datetime.datetime.now()) + "; " + telemetry + "; ambient on\n")
+    print(str(datetime.datetime.now()) + "; " + telemetry + "; run_ambient successful in main.py\n")
+    f_ambientlog_a.write(str(datetime.datetime.now()) + "; " + telemetry + "\n")
+    Popen(['python3', 'ambient.py'])
+
+""" run_pressure"""
+# log systemtime, telemetry, and ambient temp/pressure on action to mainlog.txt
+# log systemtime, and telemetry to pressurelog.txt
+# call pressure.py to run
+def run_pressure(telemetry):
+    global f_mainlog_a
+    global f_ambientlog_w
+    f_mainlog_a.write(str(datetime.datetime.now()) + "; " + telemetry + "; pressure on\n")
+    print(str(datetime.datetime.now()) + "; " + telemetry + "; run_pressure successful in main.py\n")
+    f_pressurelog_a.write(str(datetime.datetime.now()) + "; " + telemetry + "\n")
+    Popen(['python3', 'pressure.py'])
 
 """ stop_log_files """
 # close all files
 def stop_log_files():
     global f_mainlog_a
     global f_mainlog_w
-    #global f_temperaturelog_a
+    global f_temperaturelog_a
     global f_temperaturelog_w
-
+    global f_ambientlog_a
+    global f_ambientlog_w
+    global f_pressurelog_a
+    global f_pressurelog_w
     f_mainlog_a.close()
     f_mainlog_w.close()
-    #f_temperaturelog_a.close()
+    f_temperaturelog_a.close()
     f_temperaturelog_w.close()
-
+    f_ambientlog_a.close()
+    f_ambientlog_w.close()
+    f_pressurelog_a.close()
+    f_pressurelog_w.close()
 
 """ main """
 def main():
@@ -180,10 +230,13 @@ def main():
     ser = serial.Serial(port=PORTNAME, baudrate=BAUDRATE, timeout=TIMEOUT)
 
     # set all function run variables to false
+    has_files_reset = False
     has_camera_run = False
     has_motor_run = False
     has_temperature_run = False
     has_leds_run = False
+    has_ambient_run = False
+    has_pressure_run = False
 
     # Main loop to continuously read in incoming data and attempt to parse it.
     while True:
@@ -226,6 +279,10 @@ def main():
         telemetry += str(FLIGHT_DATA['warnings'][3]) 
         #print(telemetry)
 
+        if not has_files_reset:
+            if (FLIGHT_DATA['flight_event'] == FLIGHT_EVENT_RESET_FILES):
+                reset_files(telemetry)
+                has_files_reset = True
 
         # checks if the camera has not run
             # true: check for flight event
@@ -236,8 +293,7 @@ def main():
             if (FLIGHT_DATA['flight_event'] == FLIGHT_EVENT_CAMERA): 
                 run_camera(telemetry)
                 has_camera_run = True
-
-
+        
         # checks if the motor has not run
             # true: check for flight event
                 # true: call run_motor function
@@ -247,18 +303,17 @@ def main():
             if (FLIGHT_DATA['flight_event'] == FLIGHT_EVENT_MOTOR): 
                 run_motor(telemetry)
                 has_motor_run = True
-
-
+         
         # checks if the temperature has not run
             # true: check for flight event
                 # true: call run_temperature function
                 # false: skip
             # false: skip
         if not has_temperature_run:
-           if (FLIGHT_DATA['flight_event'] == FLIGHT_EVENT_TEMPERATURE): 
+            if (FLIGHT_DATA['flight_event'] == FLIGHT_EVENT_TEMPERATURE): 
+                #global f_temperaturelog_w.write(str(datetime.datetime.now()) + ": reset\n")
                 run_temperature(telemetry)
                 has_temperature_run = True
-
 
         # checks if the leds has not run
             # true: check for flight event
@@ -266,15 +321,35 @@ def main():
                 # false: skip
             # false: skip
         if not has_leds_run:
-           if (FLIGHT_DATA['flight_event'] == FLIGHT_EVENT_LEDS): 
+            if (FLIGHT_DATA['flight_event'] == FLIGHT_EVENT_LEDS): 
                 run_leds(telemetry)
                 has_leds_run = True
 
+        # checks if ambient has not run
+            # true: check for flight event
+                # true: call run_ambient function
+                # false: skip
+            # false: skip
+        if not has_ambient_run:
+            if (FLIGHT_DATA['flight_event'] == FLIGHT_EVENT_AMBIENT):
+                #global f_ambientlog_w.write(str(datetime.datetime.now()) + ": reset\n")
+                run_ambient(telemetry)
+                has_ambient_run = True
+
+        # checks if pressure has not run
+            # true: check for flight event
+                # true: call run_pressure function
+                # false: skip
+            # false: skip
+        if not has_pressure_run:
+            if (FLIGHT_DATA['flight_event'] == FLIGHT_EVENT_PRESSURE):
+                #global f_pressurelog_w.write(str(datetime.datetime.now()) + ": reset'n")
+                run_pressure(telemetry)
+                has_pressure_run = True
 
         # calls stop_log_files function if mission has ended
         if (FLIGHT_DATA['flight_event'] == FLIGHT_EVENT_MISSION_END): # M is mission end
-           stop_log_files()
-
+            stop_log_files()
 
 
 if __name__=="__main__":

@@ -2,7 +2,7 @@ import datetime
 import glob
 import time
 
-LOGS = 3 # number of logs
+LOGS = 720 # number of logs
 
 # code from: circuitbasics.com/raspberry-pi-ds18b20-temperature-sensor-tutorial
 
@@ -33,18 +33,21 @@ f_temperaturelog_a = open("temperaturelog.txt", "a")
 
 # logs systemtime when the file starts running and confirms file open
 f_temperaturelog_a.write(str(datetime.datetime.now()) + " file was successfully opened and run\n")
-print(str(datetime.datetime.now()) + "temperature file was successfully opened and run\n")
+print(str(datetime.datetime.now()) + " temperature file was successfully opened and run\n")
 
 # logs systemtime and temperature every ~2-3 seconds when time.sleep(0.2) in read_temp() and time.sleep(1) in for loop
 for x in range(LOGS):
-    print(str(datetime.datetime.now()) + "; ")
-    info = read_temp()
-    f_temperaturelog_a.write(str(datetime.datetime.now()) + ": " + str(info) + "\n")
-    print(read_temp())
+    #print(str(datetime.datetime.now()) + "; ")
+    c, f = read_temp()
+    print(str(datetime.datetime.now()) + ": ")
+    f_temperaturelog_a.write(str(datetime.datetime.now()) + ": ")
+    f_temperaturelog_a.write("Touch temperature: {0}*C {1}*F".format(c,f))
+    f_temperaturelog_a.write("\n")
+    print("Touch temperature: {0}*C {1}*F".format(c,f))
     print("\n")
     time.sleep(1)
 
-conf = str(datetime.datetime.now()) + ": temperature logging complete, logged " + LOGS + " iterations"
+conf = str(datetime.datetime.now()) + ": temperature logging complete, logged " + str(LOGS) + " times"
 f_temperaturelog_a.write(conf)
 f_temperaturelog_a.close()
 print(conf)

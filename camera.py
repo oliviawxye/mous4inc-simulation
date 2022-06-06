@@ -2,7 +2,7 @@ import datetime
 import time
 from picamera import PiCamera
 
-TEST_NUM = 7
+TEST_NUM = 9
 RES_WIDTH = 1280
 RES_HEIGHT = 720
 FPS = 24
