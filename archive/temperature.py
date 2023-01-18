@@ -1,14 +1,10 @@
 import datetime
 import glob
 import time
-import os.path
 
-LOGS = 7200 # number of logs
+LOGS = 720 # number of logs
 
 # code from: circuitbasics.com/raspberry-pi-ds18b20-temperature-sensor-tutorial
-
-# PATH
-PATH_HOME = '/home/pi/Desktop/parallel/'
 
 base_dir = '/sys/bus/w1/devices/'
 device_folder = glob.glob(base_dir + '28*')[0]
@@ -33,7 +29,7 @@ def read_temp():
         return temp_c, temp_f
 
 # opens the temperaturelog.txt file to append
-f_temperaturelog_a = open(PATH_HOME + "temperaturelog.txt", "a")
+f_temperaturelog_a = open("temperaturelog.txt", "a")
 
 # logs systemtime when the file starts running and confirms file open
 f_temperaturelog_a.write(str(datetime.datetime.now()) + " file was successfully opened and run\n")
@@ -50,10 +46,8 @@ for x in range(LOGS):
     print("Touch temperature: {0}*C {1}*F".format(c,f))
     print("\n")
     time.sleep(1)
-    if os.path.exists(PATH_HOME + "shutdown.txt"):
-        break
 
-conf = str(datetime.datetime.now()) + ": temperature logging complete, logged " + str(x) + " times"
+conf = str(datetime.datetime.now()) + ": temperature logging complete, logged " + str(LOGS) + " times"
 f_temperaturelog_a.write(conf)
 f_temperaturelog_a.close()
 print(conf)

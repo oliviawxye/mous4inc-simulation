@@ -1,12 +1,6 @@
 import datetime
 import time
 import RPi.GPIO as io
-import os.path
-
-# PATH
-PATH_HOME = '/home/pi/Desktop/parallel/'
-
-print(str(datetime.datetime.now()) + "leds file was successfully opened and run\n")
 
 io.setmode(io.BCM)
 
@@ -34,12 +28,7 @@ io.output(led4, True)
 io.output(led5, True)
 io.output(backlight1, True)
 io.output(backlight2, True)
-#time.sleep(720)
-while True:
-    if os.path.exists(PATH_HOME + "shutdown.txt"):
-        break
-    time.sleep(10)
-
+time.sleep(720)
 io.output(led1, False)
 io.output(led2, False)
 io.output(led3, False)
@@ -50,4 +39,5 @@ io.output(backlight2, False)
 
 io.cleanup()
 
+print(str(datetime.datetime.now()) + "leds file was successfully opened and run\n")
 
